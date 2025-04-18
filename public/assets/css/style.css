@@ -479,21 +479,24 @@ button.bg-danger:hover {
     border-color: #FFA3B5!important;
 }
 .btn-primary {
-	background-color: #FFA3B5;
-    border: 1px solid #FFA3B5;
+    background: linear-gradient(90deg, #ffacc4, #7f4d94); /* Dégradé rose à violet */
+    border: 1px solid #7f4d94; /* Bordure violet */
 }
+
 .btn-primary:hover,
 .btn-primary:focus,
 .btn-primary.active,
 .btn-primary:active,
 .open > .dropdown-toggle.btn-primary {
-	background-color: #FFB8C5;
-	border: 1px solid #FFB8C5;
+    background: linear-gradient(90deg, #ff68a1, #6b3e92); /* Dégradé rose plus accentué sur hover/focus */
+    border: 1px solid #6b3e92; /* Bordure violet plus foncé */
 }
+
 .nav-pills .nav-link.active, .nav-pills .show>.nav-link {
     color: #fff;
-    background-color: #FFB8C5;
+    background: linear-gradient(90deg, #ff68a1, #6b3e92); /* Dégradé pour les éléments actifs dans les pilles */
 }
+
 .btn-primary.active.focus,
 .btn-primary.active:focus,
 .btn-primary.active:hover,
@@ -503,44 +506,51 @@ button.bg-danger:hover {
 .open > .dropdown-toggle.btn-primary.focus,
 .open > .dropdown-toggle.btn-primary:focus,
 .open > .dropdown-toggle.btn-primary:hover {
-	background-color: #FFB8C5;
-	border: 1px solid #FFB8C5;
+    background: linear-gradient(90deg, #ff68a1, #6b3e92); /* Dégradé rose plus accentué pour état actif */
+    border: 1px solid #6b3e92; /* Bordure violet plus foncé */
 }
+
 .btn-primary.active:not(:disabled):not(.disabled),
 .btn-primary:active:not(:disabled):not(.disabled),
 .show > .btn-primary.dropdown-toggle {
-	background-color: #FFB8C5;
-	border-color: #FFB8C5;
-	color: #fff;
+    background: linear-gradient(90deg, #ff68a1, #6b3e92); /* Dégradé rose à violet pour état actif */
+    border-color: #6b3e92; /* Bordure violet plus foncé */
+    color: #fff; /* Couleur du texte en blanc */
 }
+
 .btn-primary.active:focus:not(:disabled):not(.disabled), 
 .btn-primary:active:focus:not(:disabled):not(.disabled), 
 .show > .btn-primary.dropdown-toggle:focus {
-	box-shadow: unset;
+    box-shadow: unset; /* Retirer l'ombre */
 }
+
 .btn-primary.disabled, .btn-primary:disabled {
-    background-color: #FFA3B5;
-    border-color: #FFA3B5;
-    color: #fff;
+    background-color: #FFA3B5; /* Utilisation de la couleur par défaut quand désactivé */
+    border-color: #FFA3B5; /* Bordure de couleur par défaut */
+    color: #fff; /* Couleur du texte en blanc */
 }
+
 .btn-secondary.active:focus:not(:disabled):not(.disabled), 
 .btn-secondary:active:focus:not(:disabled):not(.disabled), 
 .show > .btn-secondary.dropdown-toggle:focus {
 	box-shadow: unset;
 }
+
 .btn-success {
-	background-color: #7bb13c;
-	border: 1px solid #7bb13c
+    background: linear-gradient(90deg, #ffacc4, #7f4d94); /* Dégradé rose à violet */
+    border: 1px solid #7f4d94; /* Bordure violet */
 }
+
 .btn-success:hover,
 .btn-success:focus,
 .btn-success.active,
 .btn-success:active,
 .open > .dropdown-toggle.btn-success {
-	background-color: #699834;
-	border: 1px solid #699834;
-	color: #fff;
+    background: linear-gradient(90deg, #ff68a1, #6b3e92); /* Dégradé plus accentué sur hover/focus */
+    border: 1px solid #6b3e92; /* Bordure violet plus foncé */
+    color: #fff; /* Couleur du texte en blanc */
 }
+
 .btn-success.active.focus,
 .btn-success.active:focus,
 .btn-success.active:hover,
@@ -550,26 +560,30 @@ button.bg-danger:hover {
 .open > .dropdown-toggle.btn-success.focus,
 .open > .dropdown-toggle.btn-success:focus,
 .open > .dropdown-toggle.btn-success:hover {
-	background-color: #699834;
-	border: 1px solid #699834
+    background: linear-gradient(90deg, #ff68a1, #6b3e92); /* Dégradé plus accentué pour état actif */
+    border: 1px solid #6b3e92; /* Bordure violet plus foncé */
 }
+
 .btn-success.active:not(:disabled):not(.disabled),
 .btn-success:active:not(:disabled):not(.disabled),
 .show > .btn-success.dropdown-toggle {
-	background-color: #699834;
-	border-color: #699834;
-	color: #fff;
+    background: linear-gradient(90deg, #ff68a1, #6b3e92); /* Dégradé plus accentué pour état actif */
+    border-color: #6b3e92; /* Bordure violet plus foncé */
+    color: #fff; /* Couleur du texte en blanc */
 }
+
 .btn-success.active:focus:not(:disabled):not(.disabled), 
 .btn-success:active:focus:not(:disabled):not(.disabled), 
 .show > .btn-success.dropdown-toggle:focus {
-	box-shadow: unset;
+    box-shadow: unset; /* Retirer l'ombre */
 }
+
 .btn-success.disabled, .btn-success:disabled {
-    background-color: #7bb13c;
-    border-color: #7bb13c;
-    color: #fff;
+    background-color: #7bb13c; /* Utilisation de la couleur par défaut quand désactivé */
+    border-color: #7bb13c; /* Bordure de couleur par défaut */
+    color: #fff; /* Couleur du texte en blanc */
 }
+
 .btn-info {
 	background-color: #E07B90;
 	border: 1px solid #E07B90;
@@ -579,8 +593,8 @@ button.bg-danger:hover {
 .btn-info.active,
 .btn-info:active,
 .open > .dropdown-toggle.btn-info {
-	background-color: #e07b99;
-	border: 1px solid #e07b99
+	background-color: #df668a;
+	border: 1px solid #df668a
 }
 .btn-info.active.focus,
 .btn-info.active:focus,
@@ -1066,12 +1080,20 @@ button.bg-danger:hover {
 	color: #333;
 }
 .nav-tabs.nav-tabs-solid > li > a.active,
-.nav-tabs.nav-tabs-solid > li > a.active:hover,
-.nav-tabs.nav-tabs-solid > li > a.active:focus {
-	background-color: #FFA3B5;
-	border-color: #FFA3B5;
-	color: #fff;
+.nav-tabs.nav-tabs-solid > li > a.active:focus
+{
+    background: linear-gradient(90deg, #ffacc4, #7f4d94); /* Dégradé du noir au violet */
+    border-color: #7f4d94; /* Bordure rose */
+    color: #fff; /* Texte en blanc */
 }
+
+.nav-tabs.nav-tabs-solid > li > a.active:hover
+{
+	background: linear-gradient(90deg, #ff6f91, #5a3e72);
+    border-color: #5a3e72; /* Bordure rose */
+    color: #fff; 
+}
+
 .nav-tabs.nav-tabs-solid.nav-tabs-rounded {
 	border-radius: 50px;
 }
@@ -1500,7 +1522,7 @@ button.bg-danger:hover {
 }
 .user-menu .dropdown-menu .dropdown-item:hover {
 	color: #fff;
-    background: #FFA3B5 ;
+    background: linear-gradient(90deg, #ffacc4, #7f4d94);  ;
 }
 .header .dropdown-menu > li > a:focus,
 .header .dropdown-menu > li > a:hover {
@@ -1671,9 +1693,7 @@ html.menu-opened body {
 -----------------------*/
 
 .sidebar {
-    /* background-color: #1b5a90; */
-	background-color: #343a40;
-   /* box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);*/
+    background: linear-gradient(180deg, #ffacc4, #7f4d94);
     bottom: 0;
     left: 0;
     margin-top: 0;
@@ -1683,6 +1703,7 @@ html.menu-opened body {
     width: 240px;
     z-index: 1001;
 }
+
 .sidebar.opened {
 	-webkit-transition: all 0.4s ease;
 	-moz-transition: all 0.4s ease;
@@ -1753,7 +1774,7 @@ html.menu-opened body {
     padding: 10px 15px;
 }
 .sidebar-menu ul ul a.active {
-	color: #FFA3B5;
+	color: #7f4d94;
 	text-decoration: underline;
 }
 .mobile_btn {
@@ -1837,6 +1858,9 @@ html.menu-opened body {
     position: relative;
     transition: all 0.2s ease-in-out 0s;
 	color: #f1f1f1;
+}
+.sidebar-menu > ul > li > a.active {
+	color: #7f4d94;
 }
 .sidebar-menu ul li a i {
 	display: inline-block;

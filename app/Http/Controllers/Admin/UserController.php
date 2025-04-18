@@ -32,7 +32,7 @@ class UserController extends Controller
                     }
                 })
                 ->addColumn('action', function ($row) {
-                    $editbtn = '<a href="'.route("admin.users.edit", $row->id).'" class="editbtn"><button class="btn btn-info"><i class="fas fa-edit"></i></button></a>';
+                    $editbtn = '<a href="'.route("admin.users.edit", $row->id).'" class="editbtn"><button class="btn btn-warning"><i class="fas fa-edit"></i></button></a>';
                     $deletebtn = '<a data-id="'.$row->id.'" data-route="'.route('admin.users.destroy', $row->id).'" href="javascript:void(0)" id="deletebtn"><button class="btn btn-danger"><i class="fas fa-trash"></i></button></a>';
                     if (!auth()->user()->hasPermissionTo('edit-user')) {
                         $editbtn = '';
@@ -41,7 +41,7 @@ class UserController extends Controller
                         $deletebtn = '';
                     }
                     $btn = $editbtn.' '.$deletebtn;
-                    return $btn;
+                    return '<div class="text-center">' . $btn . '</div>';
                 })
                 ->rawColumns(['role','action'])
                 ->make(true);

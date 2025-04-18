@@ -6,7 +6,8 @@ use App\Http\Controllers\Admin\AdminController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\ContentController;
-use App\Http\Controllers\Admin\VideoController;
+use App\Http\Controllers\Admin\CategoryController;
+use App\Http\Controllers\Admin\FavoriteController;
 
 
 /*
@@ -33,9 +34,11 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::get('/admin/dashboard', [AdminController::class, 'dashboard'])->name('dashboard');
 
     Route::resource('users', UserController::class);
+    Route::resource('category', CategoryController::class);
     Route::resource('contents', ContentController::class);
 
-    Route::resource('videos', VideoController::class);
+    Route::get('/favorites', [FavoriteController::class, 'index'])->name('favorites.index');
+ 
 });
 
 

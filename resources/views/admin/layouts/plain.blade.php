@@ -46,7 +46,7 @@
                 </div>
             </div>
         </div>
-    </div><!-- Visit codeastro.com for more projects -->
+    </div>
     <!-- /Main Wrapper -->
     
 </body>

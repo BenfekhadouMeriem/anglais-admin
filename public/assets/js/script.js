@@ -244,7 +244,7 @@ $(document).ready(function(){
 document.addEventListener("DOMContentLoaded", function() {
     document.querySelectorAll("#sidebar-menu a").forEach(link => {
         link.addEventListener("mouseover", function() {
-            this.style.color = "#FFA3B5"; // Mettre en rose au survol
+            this.style.color = "#7f4d94"; // Mettre en rose au survol
         });
 
         link.addEventListener("mouseout", function() {
@@ -256,7 +256,7 @@ document.addEventListener("DOMContentLoaded", function() {
         link.addEventListener("click", function() {
             document.querySelectorAll("#sidebar-menu a").forEach(l => l.classList.remove("active"));
             this.classList.add("active");
-            this.style.color = "#FFA3B5"; // Garder le rose après le clic
+            this.style.color = "#7f4d94"; // Garder le rose après le clic
         });
     });
 });

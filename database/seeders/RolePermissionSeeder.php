@@ -15,7 +15,7 @@ class RolePermissionSeeder extends Seeder
     public function run(): void
     {
         // Créer les permissions
-        $permissions = ['edit-user', 'destroy-user'];
+        $permissions = ['edit-user', 'destroy-user', 'view-users', 'view-category', 'view-podcast', 'view-favorites'];
         foreach ($permissions as $permission) {
             Permission::firstOrCreate(['name' => $permission]);
         }
@@ -23,6 +23,10 @@ class RolePermissionSeeder extends Seeder
         // Créer le rôle admin s'il n'existe pas et lui assigner les permissions
         $role = Role::firstOrCreate(['name' => 'admin']);
         $role->syncPermissions($permissions);
+
+        // Ajouter des permissions supplémentaires au rôle admin
+        $role->givePermissionTo(['view-users', 'view-category', 'view-podcast', 'view-favorites']); // Donner d'autres permissions au rôle admin
+
 
         // Assigner le rôle admin à un utilisateur spécifique
         $user = User::where('email', 'admin@gmail.com')->first();

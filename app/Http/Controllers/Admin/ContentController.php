@@ -6,187 +6,214 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Log;
+use App\Services\TranscriptionService;
 use App\Models\Content;
+use App\Models\Category;
 
 class ContentController extends Controller
 {
-    /**
-     * Afficher la liste des contenus.
-     */
     public function index()
     {
         $contents = Content::all();
         return view('admin.contents.index', compact('contents'));
     }
 
-    /**
-     * Afficher le formulaire de création.
-     */
     public function create()
     {
-        return view('admin.contents.create');
+        $categories = Category::all();
+        return view('admin.contents.create', compact('categories'));
     }
 
-    /**
-     * Enregistrer un nouveau contenu.
-     */
     public function store(Request $request)
     {
-        $request->validate([
-            'title' => 'required',
-            'file' => 'required|mimes:mp4,mov,avi,mp3,mpeg|max:50000',
+        $validated = $request->validate([
+            'title' => 'required|string|max:255',
+            'category_id' => 'required|exists:categories,id',
+            'description' => 'nullable|string',
+            'type' => 'required|in:audio,adult,young', // Ajouter une validation
+            'file' => 'required|file|mimes:mp3,mp4,mpeg,mpga,wav|max:50000',
+            'image' => 'nullable|image|mimes:jpg,jpeg,png,gif,webp|max:2048',
+            'is_free' => 'boolean',
         ]);
-    
+
         try {
-            // 1️⃣ 📂 **Téléchargement du fichier**
+            // Fichier principal
             $file = $request->file('file');
-            $filePath = $file->store('contents', 'public');  // Stockage dans storage/app/public/contents/
-            $fullPath = storage_path('app/public/' . $filePath); // Chemin absolu
-    
-            // 2️⃣ 🔍 **Vérifier si le fichier existe après l'upload**
+            $filePath = $file->store('contents', 'public');
+            $fullPath = storage_path('app/public/' . $filePath);
+
             if (!file_exists($fullPath)) {
-                Log::error("❌ Fichier introuvable après l'upload : " . $fullPath);
-                return redirect()->back()->with('error', 'Erreur : le fichier ne s’est pas enregistré correctement.');
+                Log::error("❌ Fichier introuvable après l'upload : " . $filePath);
+                return back()->with('error', 'Erreur : le fichier ne s’est pas enregistré correctement.');
             }
-    
-            Log::info("✅ Fichier uploadé avec succès : " . $fullPath);
-    
-            // 3️⃣ 📝 **Générer la transcription**
-            $transcription = $this->generateTranscription($filePath);
-    
-            // Ajouter un log pour vérifier la transcription
-            Log::info("Transcription générée : " . $transcription);
-    
-            // 4️⃣ 🗃 **Enregistrer dans la base de données**
+
+            // Transcription
+            $transcriptionService = new TranscriptionService();
+            $transcription = $transcriptionService->generate($filePath);
+
+            // Image
+            $imagePath = null;
+            if ($request->hasFile('image')) {
+                $image = $request->file('image');
+                $imagePath = $image->store('contents/images', 'public');
+
+                if (!$imagePath || !Storage::disk('public')->exists($imagePath)) {
+                    Log::error("❌ Échec d'upload de l'image : " . $imagePath);
+                    return back()->with('error', 'Erreur : l’image ne s’est pas enregistrée correctement.');
+                }
+            }
+
+            // Enregistrement
             Content::create([
+                'category_id' => $request->category_id,
                 'title' => $request->title,
                 'description' => $request->description ?? '',
-                'type' => $request->type ?? 'audio', // Par défaut "audio"
+                'type' => $request->type ?? 'adult',
                 'file_path' => $filePath,
+                'image_path' => $imagePath,
                 'is_free' => $request->has('is_free') ? 1 : 0,
-                'transcription' => $transcription, // Enregistrer la transcription dans la base
+                'transcription' => $transcription,
             ]);
-    
+
             return redirect()->route('admin.contents.index')->with('success', '✅ Contenu ajouté avec succès !');
-    
+
         } catch (\Exception $e) {
             Log::error("❌ Erreur lors de l'ajout du contenu : " . $e->getMessage());
-            return redirect()->back()->with('error', 'Erreur : Impossible d’ajouter le contenu.');
+            return back()->with('error', 'Erreur : Impossible d’ajouter le contenu.');
         }
     }
-    
-    
 
-    /**
-     * Afficher un contenu spécifique.
-     */
     public function show(string $id)
     {
         $content = Content::findOrFail($id);
         return view('admin.contents.show', compact('content'));
     }
 
-    /**
-     * Afficher le formulaire de modification.
-     */
-    public function edit(string $id)
+    public function edit($id)
     {
         $content = Content::findOrFail($id);
-        return view('admin.contents.edit', compact('content'));
+        $categories = Category::all();
+        return view('admin.contents.edit', compact('content', 'categories'));
     }
 
-    /**
-     * Mettre à jour un contenu existant.
-     */
     public function update(Request $request, string $id)
     {
         $content = Content::findOrFail($id);
-    
+
         $request->validate([
-            'title' => 'required',
-            'file' => 'nullable|mimes:mp4,mov,avi,mp3,mpeg|max:50000',
+            'title' => 'required|string|max:255',
+            'category_id' => 'required|exists:categories,id',
+            'description' => 'nullable|string',
+            'type' => 'required|in:audio,adult,young', // Ajouter une validation
+            'file' => 'required|file|mimes:mp3,mp4,mpeg,mpga,wav|max:50000',
+            'image' => 'nullable|image|mimes:jpg,jpeg,png,gif,webp|max:2048',
+            'is_free' => 'boolean',
         ]);
-    
-        $content->title = $request->title;
-        $content->description = $request->description;
-        $content->type = $request->type;
-        $content->is_free = $request->has('is_free') ? 1 : 0;
-    
-        // Vérifier si un nouveau fichier a été téléchargé
-        if ($request->hasFile('file')) {
-            // Supprimer l'ancien fichier
-            Storage::disk('public')->delete($content->file_path);
-    
-            // Enregistrer le nouveau fichier
-            $file = $request->file('file');
-            $filePath = $file->store('contents', 'public');
-            $content->file_path = $filePath;
-    
-            // Générer la transcription pour le nouveau fichier
-            $transcription = $this->generateTranscription($filePath); // Passer le chemin relatif
-            if ($transcription) {
-                $content->transcription = $transcription;
-            } else {
-                Log::error("❌ Échec de la génération de la transcription pour le fichier : " . $filePath);
-                // Vous pouvez choisir de conserver l'ancienne transcription ou de la supprimer
-                $content->transcription = null; // Ou conserver l'ancienne transcription
-            }
+
+        $content->fill([
+            'title' => $request->title,
+            'description' => $request->description,
+            'type' => $request->type,
+            'is_free' => $request->has('is_free') ? 1 : 0,
+        ]);
+
+        if ($request->has('category_id')) {
+            $content->category_id = $request->category_id;
         }
-    
-        // Sauvegarder les données mises à jour
+
+        if ($request->hasFile('file')) {
+            Storage::disk('public')->delete($content->file_path);
+            $filePath = $request->file('file')->store('contents', 'public');
+            $content->file_path = $filePath;
+
+            $transcriptionService = new TranscriptionService();
+            $transcription = $transcriptionService->generate($filePath);
+            $content->transcription = $transcription ?? $content->transcription;
+        }
+
+        if ($request->hasFile('image')) {
+            if (!empty($content->image_path)) {
+                Storage::disk('public')->delete($content->image_path);
+            }
+            $imagePath = $request->file('image')->store('contents/images', 'public');
+            $content->image_path = $imagePath;
+        }
+
         $content->save();
-    
-        return redirect()->route('admin.contents.index')->with('success', 'Content updated successfully');
+
+        return redirect()->route('admin.contents.index')->with('success', '✅ Contenu mis à jour avec succès.');
     }
 
-    /**
-     * Supprimer un contenu.
-     */
     public function destroy(string $id)
     {
         $content = Content::findOrFail($id);
-
-        // Supprimer le fichier du stockage
-        Storage::disk('public')->delete($content->file_path);
-
-        // Supprimer le contenu de la base de données
+        Storage::disk('public')->delete([$content->file_path, $content->image_path]);
         $content->delete();
 
-        return redirect()->route('admin.contents.index')->with('success', 'Content deleted successfully');
+        return redirect()->route('admin.contents.index')->with('success', '✅ Contenu supprimé.');
     }
 
-    /**
-     * Générer la transcription d'un fichier audio ou vidéo.
-     */
-    private function generateTranscription($filePath)
+    public function getPodcasts()
     {
-        set_time_limit(300);
-        // Construire le chemin absolu du fichier
-        $fullPath = storage_path('app/public/' . $filePath);
+        $podcasts = Content::where('type', 'audio')->get();
+
+        return response()->json($podcasts);
+    }
+
+    public function getAllContents()
+    {
+        $contents = Content::all();
+
+        return response()->json([
+            'message' => '✅ Liste des contenus récupérée',
+            'contents' => $contents->map(function ($content) {
+                return [
+                    'id' => $content->id,
+                    'title' => $content->title,
+                    'description' => $content->description,
+                    'file_path' => $content->file_path
+                        ? asset('storage/' . $content->file_path)
+                        : null,
+                    'image_path' => $content->image_path
+                        ? asset('storage/' . $content->image_path)
+                        : null,
+                    'transcription' => $content->transcription,
+                ];
+            }),
+        ]);
+    }
+
+
+    public function getPodcastsByCategory($categoryTitle)
+    {
+        \Log::info("Requête pour catégorie : $categoryTitle");
+        $categoryTitle = trim(urldecode($categoryTitle));
+        $category = Category::whereRaw('LOWER(name) = ?', [strtolower($categoryTitle)])->first();
     
-        // Vérifiez que le fichier existe
-        if (!file_exists($fullPath)) {
-            Log::error("❌ Fichier introuvable pour la transcription : " . $fullPath);
-            return null;
+        if (!$category) {
+            \Log::error("Catégorie non trouvée : $categoryTitle");
+            return response()->json(['message' => 'Catégorie non trouvée'], 404);
         }
     
-        // Log pour vérifier que le fichier existe
-        Log::info("✅ Fichier trouvé pour la transcription : " . $fullPath);
+        $podcasts = $category->contents()->whereIn('type', ['adult', 'young'])->get();
+        \Log::info("Podcasts trouvés pour catégorie $categoryTitle : {$podcasts->count()}");
     
-        // Utiliser le chemin absolu dans la commande
-        $command = 'whisper "' . $fullPath . '" --model small --language en';
-
-        // Exécuter la commande shell et récupérer la sortie
-        $output = shell_exec($command);
-
-        // Nettoyer la sortie en supprimant les balises HTML
-        $cleanedOutput = strip_tags($output);
-    
-        // Log de la sortie pour vérifier
-        Log::info("Sortie de la commande whisper : " . $output);
-    
-        return $output; // Retourner la transcription ou la sortie
+        return response()->json([
+            'message' => 'Podcasts récupérés avec succès',
+            'contents' => $podcasts->map(function ($content) {
+                return [
+                    'id' => $content->id,
+                    'title' => $content->title,
+                    'description' => $content->description,
+                    'file_path' => $content->file_path
+                        ? asset('storage/' . $content->file_path)
+                        : null,
+                    'image_path' => $content->image_path
+                        ? asset('storage/' . $content->image_path)
+                        : null,
+                    'transcription' => $content->transcription,
+                ];
+            }),
+        ]);
     }
-    
-    
 }
